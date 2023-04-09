@@ -1,0 +1,872 @@
+:properties:
+:header-args: :noweb yes :mkdirp yes :padline no :eval no
+:end:
+#+TITLE: README
+
+This literate program is a replica of the [[https://github.com/docker/awesome-compose/tree/e6b1d2755f2f72a363fc346e52dce10cace846c8/react-express-mongodb][react-express-mongodb]] application.
+
+* Frontend
+
+#+begin_src conf :tangle frontend/package.json
+{
+  "name": "react_frontend",
+  "version": "1.0.0",
+  "description": "React app",
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "recharts": "^2.4.3",
+    "axios": "^1.3.4",
+    "sass": "^1.54.0",
+    "bootstrap": "^5.2.3",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "react-scripts": "^5.0.1"
+  }
+}
+#+end_src
+
+** Index
+
+#+begin_src html :tangle frontend/public/index.html
+<!DOCTYPE html>
+<html lang="en">
+  <head> 
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta
+      name="description"
+      content="Web site created using create-react-app"
+    />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+    <!--
+      manifest.json provides metadata used when your web app is installed on a
+      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
+    -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+    <title>React App</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div id="root"></div>
+    <!--
+      This HTML file is a template.
+      If you open it directly in the browser, you will see an empty page.
+      You can add webfonts, meta tags, or analytics to this file.
+      The build step will place the bundled scripts into the <body> tag.
+      To begin the development, run `npm start` or `yarn start`.
+      To create a production bundle, use `npm run build` or `yarn build`.
+    -->
+  </body>
+</html>
+#+end_src
+
+#+begin_src js :tangle frontend/src/index.js
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+import App from './App';
+import * as serviceWorker from './serviceWorker';
+
+import './custom.scss';
+
+ReactDOM.render(<App />, document.getElementById('root'));
+
+// If you want your app to work offline and load faster, you can change
+// unregister() to register() below. Note this comes with some pitfalls.
+// Learn more about service workers: https://bit.ly/CRA-PWA
+serviceWorker.unregister();
+#+end_src
+
+#+begin_src css :tangle frontend/src/index.css
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+    monospace;
+}
+#+end_src
+
+** App
+
+#+begin_src js :tangle frontend/src/App.js
+import React from "react";
+import axios from "axios";
+import "./App.scss";
+import AddTodo from "./components/AddTodo";
+import TodoList from "./components/TodoList";
+
+axios.defaults.baseURL = "http://localhost:4000";
+
+export default class App extends React.Component {
+  
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      todos: [],
+    };
+  }
+
+  componentDidMount() {
+    axios
+      .get("/api")
+      .then((response) => {
+        this.setState({
+          todos: response.data.data,
+        });
+      })
+      .catch((e) => console.log("Error : ", e));
+  }
+
+  handleAddTodo = (value) => {
+    axios
+      .post("/api/todos", { text: value })
+      .then(() => {
+        this.setState({
+          todos: [...this.state.todos, { text: value }],
+        });
+      })
+      .catch((e) => console.log("Error : ", e));
+  };
+
+  render() {
+    return (
+      <div className="App container">
+        <div className="container-fluid">
+          <div className="row">
+            <div className="col-xs-12 col-sm-8 col-md-8 offset-md-2">
+              <h1>Todos</h1>
+              <div className="todo-app">
+                <AddTodo handleAddTodo={this.handleAddTodo} />
+                <TodoList todos={this.state.todos} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+}
+#+end_src
+
+#+begin_src css :tangle frontend/src/App.scss
+.App {
+  text-align: center;
+}
+.todo-app {
+  background-color: #efefef;
+  padding: 1.2em;
+  .new-todo{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    input{
+      width: 80% !important;
+    }
+  }
+}
+
+//.list-group-item{
+//  &.active:hover{
+//
+//  }
+//  &active:hover{
+//    background-color: #d3d3d3;
+//  }
+//}
+#+end_src
+
+** Components
+
+ #+begin_src js :tangle frontend/src/components/AddTodo.js
+import React from "react";
+
+export default class AddTodo extends React.Component {
+  handleSubmit = (e) => {
+    e.preventDefault();
+    const { value } = e.target.elements.value;
+    if (value.length > 0) {
+      this.props.handleAddTodo(value);
+      e.target.reset();
+    }
+  };
+
+  render() {
+    return (
+      <form
+        noValidate
+        onSubmit={this.handleSubmit}
+        className="new-todo form-group"
+      >
+        <input
+          type="text"
+          name="value"
+          required
+          minLength={1}
+          className="form-control"
+        />
+        <button className="btn btn-primary" type="submit">
+          Add Todo
+        </button>
+      </form>
+    );
+  }
+}
+ #+end_src
+
+ #+begin_src js :tangle frontend/src/components/TodoList.js
+import React from "react";
+
+export default class TodoList extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      activeIndex: 0,
+    };
+  }
+
+  handleActive(index) {
+    this.setState({
+      activeIndex: index,
+    });
+  }
+
+  renderTodos(todos) {
+    return (
+      <ul className="list-group">
+        {todos.map((todo, i) => (
+          <li
+            className={
+              "list-group-item cursor-pointer " +
+              (i === this.state.activeIndex ? "active" : "")
+            }
+            key={i}
+            onClick={() => {
+              this.handleActive(i);
+            }}
+          >
+            {todo.text}
+          </li>
+        ))}
+      </ul>
+    );
+  }
+
+  render() {
+    let { todos } = this.props;
+    return todos.length > 0 ? (
+      this.renderTodos(todos)
+    ) : (
+      <div className="alert alert-primary" role="alert">
+        No Todos to display
+      </div>
+    );
+  }
+}
+ #+end_src
+
+** Service  worker
+
+#+begin_src js :tangle frontend/src/serviceWorker.js
+// This optional code is used to register a service worker.
+// register() is not called by default.
+
+// This lets the app load faster on subsequent visits in production, and gives
+// it offline capabilities. However, it also means that developers (and users)
+// will only see deployed updates on subsequent visits to a page, after all the
+// existing tabs open on the page have been closed, since previously cached
+// resources are updated in the background.
+
+// To learn more about the benefits of this model and instructions on how to
+// opt-in, read https://bit.ly/CRA-PWA
+
+const isLocalhost = Boolean(
+  window.location.hostname === 'localhost' ||
+    // [::1] is the IPv6 localhost address.
+    window.location.hostname === '[::1]' ||
+    // 127.0.0.1/8 is considered localhost for IPv4.
+    window.location.hostname.match(
+      /^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/
+    )
+);
+
+export function register(config) {
+  if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
+    // The URL constructor is available in all browsers that support SW.
+    const publicUrl = new URL(process.env.PUBLIC_URL, window.location.href);
+    if (publicUrl.origin !== window.location.origin) {
+      // Our service worker won't work if PUBLIC_URL is on a different origin
+      // from what our page is served on. This might happen if a CDN is used to
+      // serve assets; see https://github.com/facebook/create-react-app/issues/2374
+      return;
+    }
+
+    window.addEventListener('load', () => {
+      const swUrl = `${process.env.PUBLIC_URL}/service-worker.js`;
+
+      if (isLocalhost) {
+        // This is running on localhost. Let's check if a service worker still exists or not.
+        checkValidServiceWorker(swUrl, config);
+
+        // Add some additional logging to localhost, pointing developers to the
+        // service worker/PWA documentation.
+        navigator.serviceWorker.ready.then(() => {
+          console.log(
+            'This web app is being served cache-first by a service ' +
+              'worker. To learn more, visit https://bit.ly/CRA-PWA'
+          );
+        });
+      } else {
+        // Is not localhost. Just register service worker
+        registerValidSW(swUrl, config);
+      }
+    });
+  }
+}
+
+function registerValidSW(swUrl, config) {
+  navigator.serviceWorker
+    .register(swUrl)
+    .then(registration => {
+      registration.onupdatefound = () => {
+        const installingWorker = registration.installing;
+        if (installingWorker == null) {
+          return;
+        }
+        installingWorker.onstatechange = () => {
+          if (installingWorker.state === 'installed') {
+            if (navigator.serviceWorker.controller) {
+              // At this point, the updated precached content has been fetched,
+              // but the previous service worker will still serve the older
+              // content until all client tabs are closed.
+              console.log(
+                'New content is available and will be used when all ' +
+                  'tabs for this page are closed. See https://bit.ly/CRA-PWA.'
+              );
+
+              // Execute callback
+              if (config && config.onUpdate) {
+                config.onUpdate(registration);
+              }
+            } else {
+              // At this point, everything has been precached.
+              // It's the perfect time to display a
+              // "Content is cached for offline use." message.
+              console.log('Content is cached for offline use.');
+
+              // Execute callback
+              if (config && config.onSuccess) {
+                config.onSuccess(registration);
+              }
+            }
+          }
+        };
+      };
+    })
+    .catch(error => {
+      console.error('Error during service worker registration:', error);
+    });
+}
+
+function checkValidServiceWorker(swUrl, config) {
+  // Check if the service worker can be found. If it can't reload the page.
+  fetch(swUrl)
+    .then(response => {
+      // Ensure service worker exists, and that we really are getting a JS file.
+      const contentType = response.headers.get('content-type');
+      if (
+        response.status === 404 ||
+        (contentType != null && contentType.indexOf('javascript') === -1)
+      ) {
+        // No service worker found. Probably a different app. Reload the page.
+        navigator.serviceWorker.ready.then(registration => {
+          registration.unregister().then(() => {
+            window.location.reload();
+          });
+        });
+      } else {
+        // Service worker found. Proceed as normal.
+        registerValidSW(swUrl, config);
+      }
+    })
+    .catch(() => {
+      console.log(
+        'No internet connection found. App is running in offline mode.'
+      );
+    });
+}
+
+export function unregister() {
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.ready.then(registration => {
+      registration.unregister();
+    });
+  }
+}
+#+end_src
+
+** Custom scss
+
+#+begin_src css :tangle frontend/src/custom.scss
+// Override default variables before the import
+$body-bg: #fff;
+// Import Bootstrap and its default variables
+@import '~bootstrap/scss/bootstrap.scss';
+
+.cursor-pointer {
+  cursor: pointer;
+}
+#+end_src
+
+* Backend
+  
+#+begin_src conf :tangle backend/package.json
+{
+  "name": "node_backend",
+  "version": "1.0.0",
+  "description": "Node.js server",
+  "author": "zeeros",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.1",
+    "cookie-parser": "^1.4.6",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "mongoose": "^7.0.3"
+  }
+}
+#+end_src
+
+#+begin_src js :tangle backend/server.js
+require("./config/config");
+
+const express = require("express");
+const path = require("path");
+const cookieParser = require("cookie-parser");
+const bodyParser = require("body-parser");
+const cors = require("cors");
+const db = require("./db");
+
+const app = express();
+
+//connection from db here
+db.connect(app);
+
+app.use(cors());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, "public")));
+
+//  adding routes
+require("./routes")(app);
+
+app.on("ready", () => {
+  app.listen(3000, () => {
+    console.log("Server is up on port", 3000);
+  });
+});
+
+module.exports = app;
+#+end_src
+
+** Config
+
+#+begin_src js :tangle backend/config/config.js
+const env = process.env.NODE_ENV || "development";
+
+if (env === "development" || env === "test") {
+  const config = require("./config.json");
+  const envConfig = config[env];
+  console.log(envConfig);
+
+  Object.keys(envConfig).forEach((key) => {
+    process.env[key] = envConfig[key];
+  });
+}
+#+end_src
+
+#+begin_src js :tangle backend/config/config.json
+{
+  "test":{
+    "PORT": 3000,
+    "MONGODB_URI": "mongodb://database:27017/TodoAppTest"
+  },
+  "development":{
+    "PORT": 3000,
+    "MONGODB_URI": "mongodb://database:27017/TodoApp"
+  }
+}
+#+end_src
+
+#+begin_src js :tangle backend/config/messages.js
+module.exports = {
+  AUTHENTICATION_FAILED: {
+    code: 400,
+    message: "Authentication failed. Please login with valid credentials.",
+    success: false,
+  },
+  SUCCESSFUL_LOGIN: {
+    code: 200,
+    message: "Successfully logged in",
+    success: true,
+  },
+  INTERNAL_SERVER_ERROR: {
+    code: 500,
+    message: "Something unexpected happened",
+    success: false,
+  },
+  UNAUTHORIZED: {
+    code: 401,
+    message: "Your session has expired. Please login again",
+    success: false,
+  },
+  SUCCESSFUL_DELETE: {
+    code: 200,
+    message: "Successfully deleted",
+    success: true,
+  },
+  SUCCESSFUL_UPDATE: {
+    code: 200,
+    message: "Updated successfully",
+    success: true,
+  },
+  SUCCESSFUL: {
+    code: 200,
+    success: true,
+    message: "Successfully completed",
+  },
+  NOT_FOUND: {
+    code: 404,
+    success: true,
+    message: "Requested API not found",
+  },
+  ALREADY_EXIST: {
+    code: 200,
+    success: true,
+    message: "Already exists",
+  },
+  FORBIDDEN: {
+    code: 403,
+    message: "You are not authorized to complete this action",
+    success: false,
+  },
+  BAD_REQUEST: {
+    code: 400,
+    message: "Bad request. Please try again with valid parameters",
+    success: false,
+  },
+  IN_COMPLETE_REQUEST: {
+    code: 422,
+    message: "Required parameter missing",
+    success: false,
+  },
+};
+#+end_src
+
+** Models
+
+#+begin_src js :tangle backend/models/todos/todo.js
+const mongoose = require('mongoose');
+
+const Todo = mongoose.model('Todo', {
+    text : {
+        type: String,
+        trim: true,
+        required: true
+    }
+});
+
+module.exports = {Todo};
+#+end_src
+
+** Routes
+
+#+begin_src js :tangle backend/routes/index.js
+const express = require("express");
+const serverResponses = require("../utils/helpers/responses");
+const messages = require("../config/messages");
+const { Todo } = require("../models/todos/todo");
+
+const routes = (app) => {
+  const router = express.Router();
+
+  router.post("/todos", (req, res) => {
+    const todo = new Todo({
+      text: req.body.text,
+    });
+
+    todo
+      .save()
+      .then((result) => {
+        serverResponses.sendSuccess(res, messages.SUCCESSFUL, result);
+      })
+      .catch((e) => {
+        serverResponses.sendError(res, messages.BAD_REQUEST, e);
+      });
+  });
+
+  router.get("/", (req, res) => {
+    Todo.find({}, { __v: 0 })
+      .then((todos) => {
+        serverResponses.sendSuccess(res, messages.SUCCESSFUL, todos);
+      })
+      .catch((e) => {
+        serverResponses.sendError(res, messages.BAD_REQUEST, e);
+      });
+  });
+
+  //it's a prefix before api it is useful when you have many modules and you want to
+  //differentiate b/w each module you can use this technique
+  app.use("/api", router);
+};
+module.exports = routes;
+#+end_src
+
+** Database
+
+#+begin_src js :tangle backend/db/index.js
+const mongoose = require("mongoose");
+
+exports.connect = (app) => {
+  const options = {
+    useNewUrlParser: true,
+    autoIndex: false, // Don't build indexes
+      maxPoolSize: 10, // Maintain up to 10 socket connections
+  };
+
+  const connectWithRetry = () => {
+    mongoose.Promise = global.Promise;
+    console.log("MongoDB connection with retry");
+    mongoose
+      .connect(process.env.MONGODB_URI, options)
+      .then(() => {
+        console.log("MongoDB is connected");
+        app.emit("ready");
+      })
+      .catch((err) => {
+        console.log("MongoDB connection unsuccessful, retry after 2 seconds.", err);
+        setTimeout(connectWithRetry, 2000);
+      });
+  };
+  connectWithRetry();
+};
+#+end_src
+
+** Utils helpers
+
+#+begin_src js :tangle backend/utils/helpers/logger.js
+const path = require('path');
+const filename = path.join(__dirname, '../../logs/project.log');
+
+//you can change format according to you
+const log = require('simple-node-logger').createSimpleLogger( {
+    logFilePath:filename,
+    timestampFormat:'YYYY-MM-DD HH:mm:ss'}
+);
+module.exports = {log};
+#+end_src
+
+#+begin_src js :tangle backend/utils/helpers/responses.js
+const serverResponse = {
+    sendSuccess: (res, message, data = null) => {
+        const responseMessage = {
+            code: message.code ? message.code : 500,
+            success: message.success,
+            message: message.message,
+        };
+        if (data) { responseMessage.data = data; }
+        return res.status(message.code).json(responseMessage);
+    },
+    sendError: (res, error) => {
+        const responseMessage = {
+            code: error.code ? error.code : 500,
+            success: false,
+            message: error.message,
+        };
+        return res.status(error.code ? error.code : 500).json(responseMessage);
+    },
+};
+
+module.exports = serverResponse;
+#+end_src
+
+* Docker
+** Docker Compose
+:properties:
+:header-args+: :tangle compose.yaml
+:end:
+
+Use BuildKit to optimize the Docker builds.[fn:3]
+
+#+begin_src sh :tangle no
+COMPOSE_DOCKER_CLI_BUILD=1 \
+DOCKER_BUILDKIT=1 \
+COMPOSE_FILE=./compose.yaml \
+docker compose build
+#+end_src
+
+Create and start the containers.
+
+#+begin_src sh :tangle no
+docker compose up
+#+end_src
+
+The configuration is inspired by a [[https://github.com/docker/awesome-compose/blob/e6b1d2755f2f72a363fc346e52dce10cace846c8/react-express-mongodb/compose.yaml][sample configuration]], but the [[https://github.com/docker/awesome-compose/tree/e6b1d2755f2f72a363fc346e52dce10cace846c8/react-express-mongodb][react-express-mongodb]] sample application is inconsistent in some parts.
+Deviations from the sample configuration are highlighted and motivated below.
+
+#+begin_src conf
+version: "3.8"
+networks:
+  frontend-backend:
+  backend-database:
+services:  
+         #+end_src
+
+#+begin_src conf
+  database:
+    restart: always
+    image: mongo:4.2.0
+    volumes:
+      - ./data:/data/db
+    networks:
+      - backend-database
+    expose:
+      - 27017
+#+end_src
+
+The ~frontend~ and ~backend~ services
+- Are both published and mapped to a host port, while the sample configuration lacks a mapping for the ~backend~ and prevents the host from accessing the APIs.
+- Use different build contexts for the same =Dockerfile=, while the sample configuration defines a =Dockerfile= for each service.
+
+The ~backend~ service bypasses ~npm~ and starts directly the server.[fn:4]
+
+#+begin_src conf :tangle compose.yaml :noweb yes
+  backend:
+    restart: always
+    build:
+      context: backend
+      dockerfile: ../Dockerfile
+      target: development
+    volumes:
+      - ./backend:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - database
+    networks:
+      - backend-database
+      - frontend-backend
+    ports:
+      - 4000:3000
+    stdin_open: true
+    command: nodemon server.js
+
+  frontend:
+    build:
+      context: frontend
+      dockerfile: ../Dockerfile
+      target: development
+    ports:
+      - 3000:3000
+    stdin_open: true
+    volumes:
+      - ./frontend:/usr/src/app
+      - /usr/src/app/node_modules
+    restart: always
+    networks:
+      - frontend-backend
+    depends_on:
+      - backend
+#+end_src
+
+** =Dockerfile=
+:properties:
+:header-args+: :tangle Dockerfile
+:end:
+
+Use the official Node.js Alpine image for the ~base~ stage.
+Move all the project metadata into the working directory.
+Expose the default port for Node.js.
+
+#+begin_src conf
+FROM node:18-alpine as base	
+WORKDIR /usr/src/app
+COPY package*.json .
+EXPOSE 3000
+CMD ["npm", "start"]
+#+end_src
+
+Build the ~production~ stage on top of the ~base~ stage.
+Set ~NODE_ENV=production~ for better performance, do a clean install of the dependencies and bypass user-oriented features with the command ~npm ci~.[fn:1]
+
+#+begin_src conf
+FROM base as production
+ENV NODE_ENV=production
+RUN npm ci
+COPY . .   
+#+end_src
+
+Build the ~development~ stage on top of the ~base~ image.
+Set ~NODE_ENV=development~[fn:1] and install the ~nodemon~ command in the system path.[fn:2]
+
+#+begin_src conf
+FROM base as development
+ENV NODE_ENV=development
+RUN npm install -g nodemon@^2.0.20 && npm install
+COPY . .
+#+end_src
+
+Ignore the following files.
+
+#+begin_src conf :tangle backend/.dockerignore
+node_modules
+npm-debug.log
+#+end_src
+
+* Misc
+
+Untrack all files except this README.
+
+#+begin_src conf :tangle .gitignore
+,*
+!README.org
+#+end_src
+
+* Footnotes
+
+[fn:1] [[https://blog.logrocket.com/node-js-docker-improve-dx-docker-compose#setting-up-production-stage][Setting up the production stage]]
+
+[fn:2] [[https://rapidevelop.org/javascript/using-nodemon-with-nodejs-apps#Install_Nodemon][Install Nodemon]]
+
+[fn:3] [[https://blog.logrocket.com/node-js-docker-improve-dx-docker-compose#test-app-docker-docker-compose][Test the app with Docker and Docker Compose]]
+
+[fn:4] [[https://github.com/nodejs/docker-node/blob/main/docs/BestPractices.md#cmd][Docker and Node.js Best Practices - CMD]]
