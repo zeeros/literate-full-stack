@@ -872,7 +872,6 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y emacs
-        emacs --batch --eval "(use-package org)"
     - name: Tangling Org mode file
       run: |
         emacs --batch --eval "(progn (find-file \"README.org\") (org-babel-tangle))"	
