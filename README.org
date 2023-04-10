@@ -875,7 +875,7 @@ jobs:
     - name: Tangling Org mode file
       run: |
         emacs --batch --eval "(progn (find-file \"README.org\") (org-babel-tangle))"
-	ls -la
+        ls -la
 #+end_src
 
 * Misc
