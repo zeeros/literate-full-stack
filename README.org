@@ -860,7 +860,7 @@ name: Tangling Org Mode File
 on:
   push:
     branches:
-      - main
+      - todo-replica
 
 jobs:
   tangle:
