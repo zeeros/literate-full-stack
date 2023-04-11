@@ -852,10 +852,12 @@ node_modules
 npm-debug.log
 #+end_src
 
-* GitHub   Actions
+* GitHub Actions
 
-#+begin_src conf :tangle .github/workflows/tangle.yaml
-name: Tangling Org Mode File
+https://blog.railway.app/p/github-actions
+
+#+begin_src conf :tangle .github/workflows/deploy.yaml
+name: Deploy to Railway
 
 on:
   push:
@@ -868,7 +870,9 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-    - name: Install Emacs and Org mode
+    - name: Install Railway CLI
+      run: curl -fsSL cli.new | sh
+    - name: Install Emacs
       run: |
         sudo add-apt-repository ppa:kelleyk/emacs
         sudo apt-get update
@@ -876,7 +880,10 @@ jobs:
     - name: Tangling Org mode file
       run: |
         emacs --batch --eval "(progn (find-file \"README.org\") (org-babel-tangle))"
-        ls -la
+    - name: Deploy
+      run: railway up
+      env:
+        RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 #+end_src
 
 * Misc
