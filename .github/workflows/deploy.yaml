@@ -24,6 +24,6 @@ jobs:
     - name: Deploy
       run: |
         ls -la
-	railway up
+        railway up
       env:
         RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
