@@ -22,6 +22,8 @@ jobs:
       run: |
         emacs --batch --eval "(progn (find-file \"README.org\") (org-babel-tangle))"
     - name: Deploy
-      run: railway up
+      run: |
+        ls -la
+	railway up
       env:
         RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
