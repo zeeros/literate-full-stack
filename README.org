@@ -852,7 +852,7 @@ node_modules
 npm-debug.log
 #+end_src
 
-* GitHub Actions
+* GitHub   Actions
 
 #+begin_src conf :tangle .github/workflows/tangle.yaml
 name: Tangling Org Mode File
@@ -870,12 +870,13 @@ jobs:
       uses: actions/checkout@v2
     - name: Install Emacs and Org mode
       run: |
+        sudo add-apt-repository ppa:kelleyk/emacs
         sudo apt-get update
-        sudo apt-get install -y emacs
+        sudo apt-get install -y emacs28
     - name: Tangling Org mode file
       run: |
-        ls -la
         emacs --batch --eval "(progn (find-file \"README.org\") (org-babel-tangle))"
+        ls -la
 #+end_src
 
 * Misc
