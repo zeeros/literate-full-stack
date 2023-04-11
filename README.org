@@ -883,11 +883,11 @@ jobs:
     - name: Checkout tangled branch
       run: |
         git config --global user.email "actions@github.com"
-	git config --global user.name "GitHub Actions"
-	git checkout -b tangled
-	git add *
-	git commit -m "Tangled code"
-	git push -u origin tangled
+        git config --global user.name "GitHub Actions"
+        git checkout -b tangled
+        git add *
+        git commit -m "Tangled code"
+        git push -u origin tangled
     - name: Deploy
       run: |
         ls -la
