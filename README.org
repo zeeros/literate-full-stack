@@ -856,6 +856,8 @@ npm-debug.log
 
 https://blog.railway.app/p/github-actions
 
+https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#setting-the-permissions-of-the-github_token-for-your-repository
+
 #+begin_src conf :tangle .github/workflows/deploy.yaml
 name: Deploy to Railway
 
@@ -870,6 +872,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
     - name: Install Railway CLI
       run: curl -fsSL cli.new | sh
     - name: Install Emacs
@@ -882,8 +886,8 @@ jobs:
         emacs --batch --eval "(progn (find-file \"README.org\") (org-babel-tangle))"
     - name: Checkout tangled branch
       run: |
-        git config --global user.email "1713464+zeeros@users.noreply.github.com"
-        git config --global user.name "zeeros"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
         git add -f *
         git commit -m "Tangled code"
         git push
