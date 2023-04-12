@@ -9,9 +9,6 @@ jobs:
   tangle-and-push:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
     - name: Install Railway CLI
       run: curl -fsSL cli.new | sh
     - name: Install Emacs
@@ -19,10 +16,11 @@ jobs:
         sudo add-apt-repository ppa:kelleyk/emacs
         sudo apt-get update
         sudo apt-get install -y emacs28
-    - name: Tangling Org mode file
+    - uses: actions/checkout@v2
+    - name: Tangle Org mode file
       run: |
         emacs --batch --eval "(progn (find-file \"README.org\") (org-babel-tangle))"
-    - name: Checkout tangled branch
+    - name: Commit tangled code
       run: |
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
         git config --global user.name "github-actions[bot]"
