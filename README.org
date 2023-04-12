@@ -854,8 +854,6 @@ npm-debug.log
 
 * GitHub Actions
 
-https://blog.railway.app/p/github-actions
-
 https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#setting-the-permissions-of-the-github_token-for-your-repository
 
 #+begin_src conf :tangle .github/workflows/tangle.yaml
