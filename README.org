@@ -858,8 +858,8 @@ https://blog.railway.app/p/github-actions
 
 https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#setting-the-permissions-of-the-github_token-for-your-repository
 
-#+begin_src conf :tangle .github/workflows/deploy.yaml
-name: Deploy to Railway
+#+begin_src conf :tangle .github/workflows/tangle.yaml
+name: Tangle code
 
 on:
   push:
@@ -867,18 +867,16 @@ on:
       - todo-replica
 
 jobs:
-  tangle-and-push:
+  tangle:
     runs-on: ubuntu-latest
     steps:
-    - name: Install Railway CLI
-      run: curl -fsSL cli.new | sh
     - name: Install Emacs
       run: |
         sudo add-apt-repository ppa:kelleyk/emacs
         sudo apt-get update
         sudo apt-get install -y emacs28
     - uses: actions/checkout@v2
-    - name: Tangle Org mode file
+    - name: Tangle README.org
       run: |
         emacs --batch --eval "(progn (find-file \"README.org\") (org-babel-tangle))"
     - name: Commit tangled code
@@ -889,12 +887,6 @@ jobs:
         git add -f *
         git commit -m "Tangled code"
         git push --set-upstream origin tangled
-    - name: Deploy
-      run: |
-        ls -la
-        railway up
-      env:
-        RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 #+end_src
 
 * Misc
