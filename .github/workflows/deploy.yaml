@@ -27,7 +27,7 @@ jobs:
         git checkout -b tangled
         git add -f *
         git commit -m "Tangled code"
-        git push
+        git push --set-upstream origin tangled
     - name: Deploy
       run: |
         ls -la
