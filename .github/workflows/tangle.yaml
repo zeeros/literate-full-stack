@@ -25,4 +25,4 @@ jobs:
         git checkout -b tangled
         git add -f *
         git commit -m "Tangled code"
-        git push --set-upstream origin tangled
+        git push --force --set-upstream origin tangled
