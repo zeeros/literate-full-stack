@@ -899,12 +899,13 @@ jobs:
 
 * Misc
 
-Untrack all files except this README.
+Track only the following files.
 
 #+begin_src conf :tangle .gitignore
 /*
 !README.org
 !.github
+!.gitignore
 #+end_src
 
 * Footnotes
