@@ -9,10 +9,9 @@ jobs:
   tangle-and-push:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+    - uses: actions/checkout@v2
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
     - name: Install Railway CLI
       run: curl -fsSL cli.new | sh
     - name: Install Emacs
