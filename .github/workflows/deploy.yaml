@@ -23,8 +23,8 @@ jobs:
         emacs --batch --eval "(progn (find-file \"README.org\") (org-babel-tangle))"
     - name: Checkout tangled branch
       run: |
-        git config --global user.email "actions@github.com"
-        git config --global user.name "GitHub Actions"
+        git config --global user.email "1713464+zeeros@users.noreply.github.com"
+        git config --global user.name "zeeros"
         git add -f *
         git commit -m "Tangled code"
         git push
