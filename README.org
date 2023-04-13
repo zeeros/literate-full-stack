@@ -904,7 +904,9 @@ Tangles the code.
   run: emacs --batch --eval "(progn (find-file \"README.org\") (org-babel-tangle))"
     #+end_src
 
-Checks out the ~tangled~ branch, adds, commits and pushes any change.
+Create a ~tangled~ branch.
+Add and commit the tangled files.
+Forcefuly push the branch to ~origin~.
 
 #+name: push-changes-tangled
 #+begin_src yaml
@@ -912,10 +914,10 @@ Checks out the ~tangled~ branch, adds, commits and pushes any change.
   run: |
     git config --global user.name github-actions
     git config --global user.email github-actions@github.com
-    git checkout tangled
+    git checkout -b tangled
     git add -f .
     git commit -m "Tangled code"
-    git push
+    git push --force --set-upstream origin tangled
 #+end_src
 
 * Misc

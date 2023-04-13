@@ -20,7 +20,7 @@ jobs:
         run: |
           git config --global user.name github-actions
           git config --global user.email github-actions@github.com
-          git checkout tangled
+          git checkout -b tangled
           git add -f .
           git commit -m "Tangled code"
-          git push
+          git push --force --set-upstream origin tangled
