@@ -1,0 +1,27 @@
+name: Tangle code
+on:
+  push:
+    branches:
+      - main
+jobs:
+  tangle:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Emacs
+        run: |
+          sudo add-apt-repository ppa:kelleyk/emacs
+          sudo apt-get update
+          sudo apt-get install -y emacs28
+      - uses: actions/checkout@v3
+      - name: Tangle README.org
+        run: emacs --batch --eval "(progn (find-file \"README.org\") (org-babel-tangle))"
+      - uses: actions/checkout@v3
+        with:
+          ref: tangled
+      - name: Commit and push the tangled code
+        run: |
+          git config --global user.name github-actions
+          git config --global user.email github-actions@github.com
+          git add -f .
+          git commit -m "Tangled code"
+          git push
