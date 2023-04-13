@@ -904,9 +904,9 @@ Tangles the code.
   run: emacs --batch --eval "(progn (find-file \"README.org\") (org-babel-tangle))"
     #+end_src
 
-Create a ~tangled~ branch.
-Add and commit the tangled files.
-Forcefuly push the branch to ~origin~.
+Creates a ~tangled~ branch.
+Adds and commits the tangled files.
+Forcefuly pushes the branch to ~origin~.
 
 #+name: step-push-tangled
 #+begin_src yaml
