@@ -5,9 +5,10 @@
 
 This literate program is a replica of the [[https://github.com/docker/awesome-compose/tree/e6b1d2755f2f72a363fc346e52dce10cace846c8/react-express-mongodb][react-express-mongodb]] application.
 
-* Frontend
+* Web application
+** Frontend
 
-#+begin_src conf :tangle frontend/package.json
+#+begin_src js :tangle frontend/package.json
 {
   "name": "react_frontend",
   "version": "1.0.0",
@@ -32,7 +33,7 @@ This literate program is a replica of the [[https://github.com/docker/awesome-co
 }
 #+end_src
 
-** Index
+*** Index
 
 #+begin_src html :tangle frontend/public/index.html
 <!DOCTYPE html>
@@ -110,7 +111,7 @@ code {
 }
 #+end_src
 
-** App
+*** App
 
 #+begin_src js :tangle frontend/src/App.js
 import React from "react";
@@ -200,7 +201,7 @@ export default class App extends React.Component {
 //}
 #+end_src
 
-** Components
+*** Components
 
  #+begin_src js :tangle frontend/src/components/AddTodo.js
 import React from "react";
@@ -290,7 +291,7 @@ export default class TodoList extends React.Component {
 }
  #+end_src
 
-** Service  worker
+*** Service  worker
 
 #+begin_src js :tangle frontend/src/serviceWorker.js
 // This optional code is used to register a service worker.
@@ -430,7 +431,7 @@ export function unregister() {
 }
 #+end_src
 
-** Custom scss
+*** Custom scss
 
 #+begin_src css :tangle frontend/src/custom.scss
 // Override default variables before the import
@@ -443,9 +444,9 @@ $body-bg: #fff;
 }
 #+end_src
 
-* Backend
+** Backend
   
-#+begin_src conf :tangle backend/package.json
+#+begin_src js :tangle backend/package.json
 {
   "name": "node_backend",
   "version": "1.0.0",
@@ -499,7 +500,7 @@ app.on("ready", () => {
 module.exports = app;
 #+end_src
 
-** Config
+*** Config
 
 #+begin_src js :tangle backend/config/config.js
 const env = process.env.NODE_ENV || "development";
@@ -593,7 +594,7 @@ module.exports = {
 };
 #+end_src
 
-** Models
+*** Models
 
 #+begin_src js :tangle backend/models/todos/todo.js
 const mongoose = require('mongoose');
@@ -609,7 +610,7 @@ const Todo = mongoose.model('Todo', {
 module.exports = {Todo};
 #+end_src
 
-** Routes
+*** Routes
 
 #+begin_src js :tangle backend/routes/index.js
 const express = require("express");
@@ -652,7 +653,7 @@ const routes = (app) => {
 module.exports = routes;
 #+end_src
 
-** Database
+*** Database
 
 #+begin_src js :tangle backend/db/index.js
 const mongoose = require("mongoose");
@@ -682,7 +683,7 @@ exports.connect = (app) => {
 };
 #+end_src
 
-** Utils helpers
+*** Utils helpers
 
 #+begin_src js :tangle backend/utils/helpers/logger.js
 const path = require('path');
@@ -720,7 +721,7 @@ const serverResponse = {
 module.exports = serverResponse;
 #+end_src
 
-* Docker
+* Containerization
 ** Docker Compose
 :properties:
 :header-args+: :tangle compose.yaml
@@ -744,7 +745,7 @@ docker compose up
 The configuration is inspired by a [[https://github.com/docker/awesome-compose/blob/e6b1d2755f2f72a363fc346e52dce10cace846c8/react-express-mongodb/compose.yaml][sample configuration]], but the [[https://github.com/docker/awesome-compose/tree/e6b1d2755f2f72a363fc346e52dce10cace846c8/react-express-mongodb][react-express-mongodb]] sample application is inconsistent in some parts.
 Deviations from the sample configuration are highlighted and motivated below.
 
-#+begin_src conf
+#+begin_src yaml
 version: "3.8"
 networks:
   frontend-backend:
@@ -752,7 +753,7 @@ networks:
 services:  
          #+end_src
 
-#+begin_src conf
+#+begin_src yaml
   database:
     restart: always
     image: mongo:4.2.0
@@ -770,7 +771,7 @@ The ~frontend~ and ~backend~ services
 
 The ~backend~ service bypasses ~npm~ and starts directly the server.[fn:4]
 
-#+begin_src conf :tangle compose.yaml :noweb yes
+#+begin_src yaml :tangle compose.yaml :noweb yes
   backend:
     restart: always
     build:
@@ -847,51 +848,83 @@ COPY . .
 
 Ignore the following files.
 
-#+begin_src conf :tangle backend/.dockerignore
+#+begin_src text :tangle backend/.dockerignore
 node_modules
 npm-debug.log
 #+end_src
 
-* GitHub Actions
+* Deployment
 
-https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#setting-the-permissions-of-the-github_token-for-your-repository
+#+begin_quote
+Note: In the GitHub repository, the ~GITHUB_TOKEN~ must have read and write permissions (check [[https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#setting-the-permissions-of-the-github_token-for-your-repository][here]] how to configure them).
+#+end_quote
 
-#+begin_src conf :tangle .github/workflows/tangle.yaml
+Define ~Tangle~ workflow to be triggered whenever there is a push to branch ~main~.
+The workflow includes just one job, ~tangle~.
+
+#+begin_src yaml :tangle .github/workflows/tangle.yaml
 name: Tangle code
-
 on:
   push:
     branches:
-      - todo-replica
-
+      - main
 jobs:
   tangle:
     runs-on: ubuntu-latest
     steps:
-    - name: Install Emacs
-      run: |
-        sudo add-apt-repository ppa:kelleyk/emacs
-        sudo apt-get update
-        sudo apt-get install -y emacs28
-    - uses: actions/checkout@v2
-    - name: Tangle README.org
-      run: |
-        emacs --batch --eval "(progn (find-file \"README.org\") (org-babel-tangle))"
-    - name: Commit tangled code
-      run: |
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
-        git config --global user.name "github-actions[bot]"
-        git checkout -b tangled
-        git add -f *
-        git commit -m "Tangled code"
-        git push --force --set-upstream origin tangled
+      <<step-install-emacs>>
+      <<step-checkout-main>>
+      <<step-tangle>>
+      <<step-checkout-tangled>>
+#+end_src
+
+The ~tangle~ job installs Emacs, since the ~ubuntu-latest~ image doesn't include it.
+
+#+name: step-install-emacs
+#+begin_src yaml
+- name: Install Emacs
+  run: |
+    sudo add-apt-repository ppa:kelleyk/emacs
+    sudo apt-get update
+    sudo apt-get install -y emacs28
+#+end_src
+
+Checks out the ~main~ branch.
+
+#+name: step-checkout-main
+#+begin_src yaml
+- uses: actions/checkout@v3
+#+end_src
+
+Tangles the code.
+
+#+name: step-tangle
+#+begin_src yaml
+- name: Tangle README.org
+  run: emacs --batch --eval "(progn (find-file \"README.org\") (org-babel-tangle))"
+    #+end_src
+
+Checks out the ~tangled~ branch, adds, commits and pushes the changes.
+
+#+name: step-checkout-tangled
+    #+begin_src yaml
+- uses: actions/checkout@v3
+  with:
+    ref: tangled
+- name: Commit and push the tangled code
+  run: |
+    git config --global user.name github-actions
+    git config --global user.email github-actions@github.com
+    git add -f .
+    git commit -m "Tangled code"
+    git push
 #+end_src
 
 * Misc
 
 Track only the following files.
 
-#+begin_src conf :tangle .gitignore
+#+begin_src text :tangle .gitignore
 /*
 !README.org
 !.github
