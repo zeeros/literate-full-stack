@@ -874,7 +874,6 @@ jobs:
       <<step-install-emacs>>
       <<step-checkout-main>>
       <<step-tangle>>
-      <<step-checkout-tangled>>
       <<push-changes-tangled>>
 #+end_src
 
@@ -905,18 +904,7 @@ Tangles the code.
   run: emacs --batch --eval "(progn (find-file \"README.org\") (org-babel-tangle))"
     #+end_src
 
-Checks out the ~tangled~ branch.
-
-#+name: step-checkout-tangled
-    #+begin_src yaml
-- name: Check out tangled
-  uses: actions/checkout@v3
-  with:
-    ref: tangled
-    clean: false
-#+end_src
-
-Adds, commits and pushes any change to ~tangled~.
+Checks out the ~tangled~ branch, adds, commits and pushes any change.
 
 #+name: push-changes-tangled
 #+begin_src yaml
@@ -924,9 +912,10 @@ Adds, commits and pushes any change to ~tangled~.
   run: |
     git config --global user.name github-actions
     git config --global user.email github-actions@github.com
+    git checkout tangled
     git add -f .
     git commit -m "Tangled code"
-    git push tangled
+    git push
 #+end_src
 
 * Misc
