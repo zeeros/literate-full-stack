@@ -913,6 +913,7 @@ Checks out the ~tangled~ branch.
   uses: actions/checkout@v3
   with:
     ref: tangled
+    clean: false
 #+end_src
 
 Adds, commits and pushes any change to ~tangled~.
