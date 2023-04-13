@@ -926,7 +926,7 @@ Adds, commits and pushes any change to ~tangled~.
     git config --global user.email github-actions@github.com
     git add -f .
     git commit -m "Tangled code"
-    git push
+    git push tangled
 #+end_src
 
 * Misc
