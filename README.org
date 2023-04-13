@@ -3,9 +3,10 @@
 :end:
 #+TITLE: README
 
-This literate program is a replica of the [[https://github.com/docker/awesome-compose/tree/e6b1d2755f2f72a363fc346e52dce10cace846c8/react-express-mongodb][react-express-mongodb]] application.
-
 * Web application
+
+This is a replica of the [[https://github.com/docker/awesome-compose/tree/e6b1d2755f2f72a363fc346e52dce10cace846c8/react-express-mongodb][react-express-mongodb]] application.
+
 ** Frontend
 
 #+begin_src js :tangle frontend/package.json
@@ -904,9 +905,7 @@ Tangles the code.
   run: emacs --batch --eval "(progn (find-file \"README.org\") (org-babel-tangle))"
     #+end_src
 
-Creates a ~tangled~ branch.
-Adds and commits the tangled files.
-Forcefuly pushes the branch to ~origin~.
+Creates a ~tangled~ branch, then adds, commits and forcefuly pushes the branch to ~origin~.
 
 #+name: step-push-tangled
 #+begin_src yaml
