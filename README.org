@@ -874,7 +874,7 @@ jobs:
       <<step-install-emacs>>
       <<step-checkout-main>>
       <<step-tangle>>
-      <<push-changes-tangled>>
+      <<step-push-tangled>>
 #+end_src
 
 The ~tangle~ job installs Emacs, since the ~ubuntu-latest~ image doesn't include it.
@@ -908,7 +908,7 @@ Create a ~tangled~ branch.
 Add and commit the tangled files.
 Forcefuly push the branch to ~origin~.
 
-#+name: push-changes-tangled
+#+name: step-push-tangled
 #+begin_src yaml
 - name: Add, commit and push to tangled
   run: |
