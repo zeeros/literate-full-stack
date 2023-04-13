@@ -893,7 +893,8 @@ Checks out the ~main~ branch.
 
 #+name: step-checkout-main
 #+begin_src yaml
-- uses: actions/checkout@v3
+- name: Check out main
+  uses: actions/checkout@v3
 #+end_src
 
 Tangles the code.
@@ -904,14 +905,20 @@ Tangles the code.
   run: emacs --batch --eval "(progn (find-file \"README.org\") (org-babel-tangle))"
     #+end_src
 
-Checks out the ~tangled~ branch, adds, commits and pushes the changes.
+Checks out the ~tangled~ branch.
 
 #+name: step-checkout-tangled
     #+begin_src yaml
-- uses: actions/checkout@v3
+- name: Check out tangled
+  uses: actions/checkout@v3
   with:
     ref: tangled
-- name: Commit and push the tangled code
+#+end_src
+
+Adds, commits and pushes any change to ~tangled~.
+
+#+begin_src yaml
+- name: Add, commit and push to tangled
   run: |
     git config --global user.name github-actions
     git config --global user.email github-actions@github.com
