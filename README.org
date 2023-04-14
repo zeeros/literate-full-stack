@@ -721,95 +721,7 @@ const serverResponse = {
 module.exports = serverResponse;
 #+end_src
 
-* Containerization
-** Docker Compose
-:properties:
-:header-args+: :tangle compose.yaml
-:end:
-
-Use BuildKit to optimize the Docker builds.[fn:3]
-
-#+begin_src sh :tangle no
-COMPOSE_DOCKER_CLI_BUILD=1 \
-DOCKER_BUILDKIT=1 \
-COMPOSE_FILE=./compose.yaml \
-docker compose build
-#+end_src
-
-Create and start the containers.
-
-#+begin_src sh :tangle no
-docker compose up
-#+end_src
-
-The configuration is inspired by a [[https://github.com/docker/awesome-compose/blob/e6b1d2755f2f72a363fc346e52dce10cace846c8/react-express-mongodb/compose.yaml][sample configuration]], but the [[https://github.com/docker/awesome-compose/tree/e6b1d2755f2f72a363fc346e52dce10cace846c8/react-express-mongodb][react-express-mongodb]] sample application is inconsistent in some parts.
-Deviations from the sample configuration are highlighted and motivated below.
-
-#+begin_src yaml
-version: "3.8"
-networks:
-  frontend-backend:
-  backend-database:
-services:  
-         #+end_src
-
-#+begin_src yaml
-  database:
-    restart: always
-    image: mongo:4.2.0
-    volumes:
-      - ./data:/data/db
-    networks:
-      - backend-database
-    expose:
-      - 27017
-#+end_src
-
-The ~frontend~ and ~backend~ services
-- Are both published and mapped to a host port, while the sample configuration lacks a mapping for the ~backend~ and prevents the host from accessing the APIs.
-- Use different build contexts for the same =Dockerfile=, while the sample configuration defines a =Dockerfile= for each service.
-
-The ~backend~ service bypasses ~npm~ and starts directly the server.[fn:4]
-
-#+begin_src yaml :tangle compose.yaml :noweb yes
-  backend:
-    restart: always
-    build:
-      context: backend
-      dockerfile: ../Dockerfile
-      target: development
-    volumes:
-      - ./backend:/usr/src/app
-      - /usr/src/app/node_modules
-    depends_on:
-      - database
-    networks:
-      - backend-database
-      - frontend-backend
-    ports:
-      - 4000:3000
-    stdin_open: true
-    command: nodemon server.js
-
-  frontend:
-    build:
-      context: frontend
-      dockerfile: ../Dockerfile
-      target: development
-    ports:
-      - 3000:3000
-    stdin_open: true
-    volumes:
-      - ./frontend:/usr/src/app
-      - /usr/src/app/node_modules
-    restart: always
-    networks:
-      - frontend-backend
-    depends_on:
-      - backend
-#+end_src
-
-** =Dockerfile=
+** Containerization
 :properties:
 :header-args+: :tangle Dockerfile
 :end:
@@ -819,7 +731,7 @@ Move all the project metadata into the working directory.
 Expose the default port for Node.js.
 
 #+begin_src conf
-FROM node:18-alpine as base	
+FROM node:18-alpine as base
 WORKDIR /usr/src/app
 COPY package*.json .
 EXPOSE 3000
@@ -833,7 +745,7 @@ Set ~NODE_ENV=production~ for better performance, do a clean install of the depe
 FROM base as production
 ENV NODE_ENV=production
 RUN npm ci
-COPY . .   
+COPY . .
 #+end_src
 
 Build the ~development~ stage on top of the ~base~ image.
@@ -854,9 +766,95 @@ npm-debug.log
 #+end_src
 
 * Deployment
+** Local deployment
+
+The [[Web application][web application]] can be run locally as multi-container app using the [[https://docs.docker.com/compose/][Docker Compose]] tool.
+Use BuildKit to optimize the Docker builds.[fn:3]
+
+#+begin_src sh
+COMPOSE_DOCKER_CLI_BUILD=1 \
+DOCKER_BUILDKIT=1 \
+COMPOSE_FILE=./compose.yaml \
+docker compose build
+#+end_src
+
+Create and start the containers.
+
+#+begin_src sh
+docker compose up
+#+end_src
+
+*** Configuration
+
+The ~frontend~ and ~backend~ services
+- Are both published and mapped to a host port.
+   #+begin_quote
+   - Note :: The [[https://github.com/docker/awesome-compose/blob/e6b1d2755f2f72a363fc346e52dce10cace846c8/react-express-mongodb/compose.yaml][sample configuration]] lacks a mapping for the ~backend~. This prevents the host's web browser from accessing the APIs.
+   #+end_quote
+- Use different build contexts for the same =Dockerfile=.
+
+The ~backend~ service bypasses ~npm~ and starts directly the server.[fn:4]
+
+#+begin_src yaml :tangle compose.yaml
+version: "3.8"
+
+services:
+  frontend:
+    build:
+      context: frontend
+      dockerfile: ../Dockerfile
+      target: development
+    ports:
+      - 3000:3000
+    stdin_open: true
+    volumes:
+      - ./frontend:/usr/src/app
+      - /usr/src/app/node_modules
+    restart: always
+    networks:
+      - frontend-backend
+    depends_on:
+      - backend
+
+  backend:
+    restart: always
+    build:
+      context: backend
+      dockerfile: ../Dockerfile
+      target: development
+    volumes:
+      - ./backend:/usr/src/app
+      - /usr/src/app/node_modules
+    depends_on:
+      - database
+    networks:
+      - backend-database
+      - frontend-backend
+    ports:
+      - 4000:3000
+    stdin_open: true
+    command: nodemon server.js
+
+  database:
+    restart: always
+    image: mongo:4.2.0
+    volumes:
+      - ./data:/data/db
+    networks:
+      - backend-database
+    expose:
+      - 27017
+
+networks:
+  frontend-backend:
+  backend-database:
+#+end_src
+
+** Remote deployment
+*** Tangle
 
 #+begin_quote
-Note: In the GitHub repository, the ~GITHUB_TOKEN~ must have read and write permissions (check [[https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#setting-the-permissions-of-the-github_token-for-your-repository][here]] how to configure them).
+- Note :: In the GitHub repository, the ~GITHUB_TOKEN~ must have read and write permissions (check [[https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#setting-the-permissions-of-the-github_token-for-your-repository][here]] how to configure them).
 #+end_quote
 
 Define ~Tangle~ workflow to be triggered whenever there is a push to branch ~main~.
@@ -918,6 +916,8 @@ Creates a ~tangled~ branch, then adds, commits and forcefuly pushes the branch t
     git commit -m "Tangled code"
     git push --force --set-upstream origin tangled
 #+end_src
+
+*** Railway
 
 * Misc
 
