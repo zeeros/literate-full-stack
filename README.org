@@ -3,9 +3,9 @@
 :end:
 #+TITLE: README
 
-* Web application
+* Application
 
-This is a replica of the [[https://github.com/docker/awesome-compose/tree/e6b1d2755f2f72a363fc346e52dce10cace846c8/react-express-mongodb][react-express-mongodb]] application.
+This is a replica of the [[https://github.com/docker/awesome-compose/tree/e6b1d2755f2f72a363fc346e52dce10cace846c8/react-express-mongodb][react-express-mongodb]] web application.
 
 ** Frontend
 
@@ -766,9 +766,9 @@ npm-debug.log
 #+end_src
 
 * Deployment
-** Local deployment
+** Local
 
-The [[Web application][web application]] can be run locally as multi-container app using the [[https://docs.docker.com/compose/][Docker Compose]] tool.
+The [[Web application][web application]] can be run locally as a multi-container app using the [[https://docs.docker.com/compose/][Docker Compose]] tool.
 Use BuildKit to optimize the Docker builds.[fn:3]
 
 #+begin_src sh
@@ -850,7 +850,7 @@ networks:
   backend-database:
 #+end_src
 
-** Remote deployment
+** Remote
 *** Tangle
 
 #+begin_quote
@@ -918,6 +918,12 @@ Creates a ~tangled~ branch, then adds, commits and forcefuly pushes the branch t
 #+end_src
 
 *** Railway
+
+From the [[https://docs.railway.app/deploy/dockerfiles#docker-compose][Railway documentation]]
+
+#+begin_quote
+Railway doesn't support docker compose at the moment.
+#+end_quote
 
 * Misc
 
