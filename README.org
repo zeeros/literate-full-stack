@@ -468,8 +468,6 @@ $body-bg: #fff;
 #+end_src
 
 #+begin_src js :tangle backend/server.js
-require("./config/config");
-
 const express = require("express");
 const path = require("path");
 const cookieParser = require("cookie-parser");
