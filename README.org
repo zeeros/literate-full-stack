@@ -506,17 +506,18 @@ module.exports = app;
 const env = process.env.NODE_ENV || "development";
 
 if (env === "development" || env === "test") {
-  const config = require("./config.json");
-  const envConfig = config[env];
-  console.log(envConfig);
+  //const config = require("./config.json");
+  //const envConfig = config[env];
+  //console.log(envConfig);
 
-  Object.keys(envConfig).forEach((key) => {
-    process.env[key] = envConfig[key];
-  });
+  //Object.keys(envConfig).forEach((key) => {
+  //  process.env[key] = envConfig[key];
+  //});
 }
 #+end_src
 
-#+begin_src js :tangle backend/config/config.json
+//:tangle backend/config/config.json
+#+begin_src js
 {
   "test":{
     "PORT": 3000,
@@ -662,14 +663,16 @@ exports.connect = (app) => {
   const options = {
     useNewUrlParser: true,
     autoIndex: false, // Don't build indexes
-      maxPoolSize: 10, // Maintain up to 10 socket connections
+    maxPoolSize: 10, // Maintain up to 10 socket connections
+    user: process.env.MONGOUSER,
+    pass: process.env.MONGOPASSWORD
   };
 
   const connectWithRetry = () => {
     mongoose.Promise = global.Promise;
     console.log("MongoDB connection with retry");
     mongoose
-      .connect(process.env.MONGODB_URI, options)
+      .connect(process.env.MONGO_URL, options)
       .then(() => {
         console.log("MongoDB is connected");
         app.emit("ready");
@@ -832,6 +835,8 @@ services:
       - frontend-backend
     ports:
       - 4000:3000
+    environment:
+      - MONGO_URL=mongodb://database:27017/TodoApp
     stdin_open: true
     command: nodemon server.js
 
