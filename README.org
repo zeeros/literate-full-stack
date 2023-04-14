@@ -925,6 +925,8 @@ From the [[https://docs.railway.app/deploy/dockerfiles#docker-compose][Railway d
 Railway doesn't support docker compose at the moment.
 #+end_quote
 
+[[https://docs.railway.app/develop/services#monorepo-services]]
+
 * Misc
 
 Track only the following files.
