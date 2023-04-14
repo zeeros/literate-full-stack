@@ -120,7 +120,7 @@ import "./App.scss";
 import AddTodo from "./components/AddTodo";
 import TodoList from "./components/TodoList";
 
-axios.defaults.baseURL = "http://localhost:4000";
+axios.defaults.baseURL = process.env.REACT_APP_BACKEND_URL
 
 export default class App extends React.Component {
   
@@ -291,7 +291,7 @@ export default class TodoList extends React.Component {
 }
  #+end_src
 
-*** Service  worker
+*** Service worker
 
 #+begin_src js :tangle frontend/src/serviceWorker.js
 // This optional code is used to register a service worker.
@@ -501,34 +501,6 @@ module.exports = app;
 #+end_src
 
 *** Config
-
-#+begin_src js :tangle backend/config/config.js
-const env = process.env.NODE_ENV || "development";
-
-if (env === "development" || env === "test") {
-  //const config = require("./config.json");
-  //const envConfig = config[env];
-  //console.log(envConfig);
-
-  //Object.keys(envConfig).forEach((key) => {
-  //  process.env[key] = envConfig[key];
-  //});
-}
-#+end_src
-
-//:tangle backend/config/config.json
-#+begin_src js
-{
-  "test":{
-    "PORT": 3000,
-    "MONGODB_URI": "mongodb://database:27017/TodoAppTest"
-  },
-  "development":{
-    "PORT": 3000,
-    "MONGODB_URI": "mongodb://database:27017/TodoApp"
-  }
-}
-#+end_src
 
 #+begin_src js :tangle backend/config/messages.js
 module.exports = {
@@ -809,6 +781,8 @@ services:
       target: development
     ports:
       - 3000:3000
+    environment:
+      - REACT_APP_BACKEND_URL=http://localhost:4000/
     stdin_open: true
     volumes:
       - ./frontend:/usr/src/app
