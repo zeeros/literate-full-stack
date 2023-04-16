@@ -866,22 +866,27 @@ Checks out the ~main~ branch.
   uses: actions/checkout@v3
 #+end_src
 
-After removing the =.gitignore= file and setting some basic git information, the ~update-branch-tangled~ job creates (or resets) the ~tangled~ branch to the latest commit of the ~origin/tangled~ branch.
-After tangling the code, any change is staged, commited and forcefuly pushed to ~origin/tangled~.
+Tangles the code.
+
+#+name: step-tangle
+#+begin_src yaml
+- name: Tangle README.org
+  run: emacs --batch --eval "(progn (find-file \"README.org\") (org-babel-tangle))"
+#+end_src
+
+Create a ~tangled~ branch. Add and commit the tangled files.
+Forcefuly push the branch to ~origin~.
 
 #+name: step-push-tangled
 #+begin_src yaml
 - name: Add, commit and push to tangled
-  run: |
-    emacs --batch --eval "(progn (find-file \"README.org\") (org-babel-tangle))"
+  run: | 
     git config --global user.name github-actions
     git config --global user.email github-actions@github.com
-    git fetch origin
-    git checkout -B origin/tangled
-    rm .gitignore
-    git add .
+    git checkout -b tangled
+    git add -f .
     git commit -m "Tangled code"
-    git push -f origin tangled
+    git push --force --set-upstream origin tangled
 #+end_src
 
 *** Railway
