@@ -643,7 +643,6 @@ exports.connect = (app) => {
   const connectWithRetry = () => {
     mongoose.Promise = global.Promise;
     console.log("MongoDB connection with retry");
-    console.log("MONGO_URL:", process.env.MONGO_URL);
     mongoose
       .connect(process.env.MONGO_URL, options)
       .then(() => {
