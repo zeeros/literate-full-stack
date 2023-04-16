@@ -4,7 +4,7 @@ on:
     branches:
       - main
 jobs:
-  tangle:
+  update-branch-tangled:
     runs-on: ubuntu-latest
     steps:
       - name: Install Emacs
@@ -18,9 +18,10 @@ jobs:
         run: emacs --batch --eval "(progn (find-file \"README.org\") (org-babel-tangle))"
       - name: Add, commit and push to tangled
         run: |
+          rm .gitignore
           git config --global user.name github-actions
           git config --global user.email github-actions@github.com
-          git checkout -b tangled
-          git add -f .
+          git checkout -B tangled origin/tangled
+          git add .
           git commit -m "Tangled code"
-          git push --force --set-upstream origin tangled
+          git push -f origin tangled

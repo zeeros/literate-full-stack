@@ -829,8 +829,8 @@ networks:
 - Note :: In the GitHub repository, the ~GITHUB_TOKEN~ must have read and write permissions (check [[https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository#setting-the-permissions-of-the-github_token-for-your-repository][here]] how to configure them).
 #+end_quote
 
-Define ~Tangle~ workflow to be triggered whenever there is a push to branch ~main~.
-The workflow includes just one job, ~tangle~.
+Define a ~Tangle code~ workflow to be triggered whenever there is a push to branch ~main~.
+The workflow includes just one job, ~update-branch-tangled~ job.
 
 #+begin_src yaml :tangle .github/workflows/tangle.yaml
 name: Tangle code
@@ -839,7 +839,7 @@ on:
     branches:
       - main
 jobs:
-  tangle:
+  update-branch-tangled:
     runs-on: ubuntu-latest
     steps:
       <<step-install-emacs>>
@@ -848,7 +848,7 @@ jobs:
       <<step-push-tangled>>
 #+end_src
 
-The ~tangle~ job installs Emacs, since the ~ubuntu-latest~ image doesn't include it.
+The ~update-branch-tangled~ job installs Emacs, since the ~ubuntu-latest~ image doesn't include it.
 
 #+name: step-install-emacs
 #+begin_src yaml
@@ -875,18 +875,20 @@ Tangles the code.
   run: emacs --batch --eval "(progn (find-file \"README.org\") (org-babel-tangle))"
     #+end_src
 
-Creates a ~tangled~ branch, then adds, commits and forcefuly pushes the branch to ~origin~.
+After removing the =.gitignore= file and setting some basic git information, the ~update-branch-tangled~ job creates (or resets) the ~tangled~ branch to the latest commit of the ~origin/tangled~ branch.
+Any change is staged, commited and forcefuly pushed to ~origin/tangled~.
 
 #+name: step-push-tangled
 #+begin_src yaml
 - name: Add, commit and push to tangled
   run: |
+    rm .gitignore
     git config --global user.name github-actions
     git config --global user.email github-actions@github.com
-    git checkout -b tangled
-    git add -f .
+    git checkout -B tangled origin/tangled
+    git add .
     git commit -m "Tangled code"
-    git push --force --set-upstream origin tangled
+    git push -f origin tangled
 #+end_src
 
 *** Railway
