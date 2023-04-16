@@ -885,6 +885,7 @@ Any change is staged, commited and forcefuly pushed to ~origin/tangled~.
     rm .gitignore
     git config --global user.name github-actions
     git config --global user.email github-actions@github.com
+    git fetch origin
     git checkout -B tangled origin/tangled
     git add .
     git commit -m "Tangled code"
