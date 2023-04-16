@@ -29,7 +29,8 @@ This is a replica of the [[https://github.com/docker/awesome-compose/tree/e6b1d2
   },
   "devDependencies": {
     "react-scripts": "^5.0.1"
-  }
+  },
+  "proxy": "http://backend:3000"
 }
 #+end_src
 
@@ -120,7 +121,8 @@ import "./App.scss";
 import AddTodo from "./components/AddTodo";
 import TodoList from "./components/TodoList";
 
-axios.defaults.baseURL = process.env.REACT_APP_BACKEND_URL
+if (process.env.REACT_APP_BACKEND_URL)
+    axios.defaults.baseURL = process.env.REACT_APP_BACKEND_URL
 
 export default class App extends React.Component {
   
@@ -759,16 +761,11 @@ docker compose up
 
 *** Configuration
 
-The ~frontend~ and ~backend~ services
-- Are both published and mapped to a host port.
-   #+begin_quote
-   - Note :: The [[https://github.com/docker/awesome-compose/blob/e6b1d2755f2f72a363fc346e52dce10cace846c8/react-express-mongodb/compose.yaml][sample configuration]] lacks a mapping for the ~backend~. This prevents the host's web browser from accessing the APIs.
-   #+end_quote
-- Use different build contexts for the same =Dockerfile=.
+Both the ~frontend~ and ~backend~ services usse different build contexts for the same =Dockerfile=.
 
 The ~backend~ service bypasses ~npm~ and starts directly the server.[fn:4]
 
-#+begin_src yaml :tangle compose.yaml
+#+begin_src text :tangle compose.yaml
 version: "3.8"
 
 services:
@@ -779,8 +776,6 @@ services:
       target: development
     ports:
       - 3000:3000
-    environment:
-      - REACT_APP_BACKEND_URL=http://localhost:4000/
     stdin_open: true
     volumes:
       - ./frontend:/usr/src/app
@@ -805,8 +800,8 @@ services:
     networks:
       - backend-database
       - frontend-backend
-    ports:
-      - 4000:3000
+    expose:
+      - 3000
     environment:
       - MONGO_URL=mongodb://database:27017/TodoApp
     stdin_open: true
