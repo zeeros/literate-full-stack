@@ -14,8 +14,7 @@ jobs:
           sudo apt-get install -y emacs28
       - name: Check out main
         uses: actions/checkout@v3
-      - name: Tangle README.org
-        run: emacs --batch --eval "(progn (find-file \"README.org\") (org-babel-tangle))"
+      
       - name: Add, commit and push to tangled
         run: |
           rm .gitignore
@@ -23,6 +22,7 @@ jobs:
           git config --global user.email github-actions@github.com
           git fetch origin
           git checkout -B tangled origin/tangled
+          emacs --batch --eval "(progn (find-file \"README.org\") (org-babel-tangle))"
           git add .
           git commit -m "Tangled code"
           git push -f origin tangled
