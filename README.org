@@ -762,8 +762,7 @@ docker compose up
 
 *** Configuration
 
-Both the ~frontend~ and ~backend~ services usse different build contexts for the same =Dockerfile=.
-
+Both the ~frontend~ and ~backend~ services use different build contexts for the same =Dockerfile=.
 The ~backend~ service bypasses ~npm~ and starts directly the server.[fn:4]
 
 #+begin_src text :tangle compose.yaml
