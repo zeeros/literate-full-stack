@@ -876,7 +876,8 @@ After tangling the code, any change is staged, commited and forcefuly pushed to 
     git config --global user.name github-actions
     git config --global user.email github-actions@github.com
     git fetch origin
-    git checkout -B tangled origin/tangled
+    git checkout -B tangled
+    git reset --hard origin/tangled
     emacs --batch --eval "(progn (find-file \"README.org\") (org-babel-tangle))"
     rm .gitignore
     git add .
