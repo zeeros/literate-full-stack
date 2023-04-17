@@ -18,11 +18,13 @@ jobs:
         run: emacs --batch --eval "(progn (find-file \"README.org\") (org-babel-tangle))"
       - name: Add, commit and push to tangled
         run: |
-          mv -f .gitignore-tangled .gitignore
           git config --global user.name github-actions
           git config --global user.email github-actions@github.com
+          mv -f .gitignore-tangled .gitignore
+          git stash save "Save local changes"
           git fetch origin
           git checkout -B tangled origin/tangled
-          git add .
+          git stash apply
+          git stash pop
           git commit -m "Tangled code"
           git push -f origin tangled
