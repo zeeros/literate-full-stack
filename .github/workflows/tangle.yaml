@@ -20,13 +20,7 @@ jobs:
         run: |
           git config --global user.name github-actions
           git config --global user.email github-actions@github.com
-          mv -f .gitignore-tangled .gitignore
-          git stash save "Save local changes"
-          git fetch origin
-          git checkout -B tangled origin/tangled
-          git stash apply
-          git stash pop
-          git status
-          git add .
+          git checkout -b tangled
+          git add -f .
           git commit -m "Tangled code"
-          git push -f origin tangled
+          git push --force --set-upstream origin tangled

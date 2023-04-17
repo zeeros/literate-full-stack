@@ -883,16 +883,10 @@ Forcefuly push the branch to ~origin~.
   run: |
     git config --global user.name github-actions
     git config --global user.email github-actions@github.com
-    mv -f .gitignore-tangled .gitignore
-    git stash save "Save local changes"
-    git fetch origin
-    git checkout -B tangled origin/tangled
-    git stash apply
-    git stash pop
-    git status
-    git add .
+    git checkout -b tangled
+    git add -f .
     git commit -m "Tangled code"
-    git push -f origin tangled
+    git push --force --set-upstream origin tangled
 #+end_src
 
 *** Railway
@@ -909,22 +903,12 @@ Railway doesn't support docker compose at the moment.
 
 Track only the following files.
 
-#+name: gitignore-exceptions
-#+begin_src text
-README.org
-.github
-.gitignore
-LICENSE
-#+end_src
-
 #+begin_src text :tangle .gitignore
 /*
-!<<gitignore-exceptions>>
-#+end_src
-
-#+begin_src text :tangle .gitignore-tangled
-<<gitignore-exceptions>>
-/data
+!README.org
+!.github
+!.gitignore
+!LICENSE
 #+end_src
 
 License.
