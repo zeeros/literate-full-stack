@@ -910,7 +910,7 @@ Railway doesn't support docker compose at the moment.
 Track only the following files.
 
 #+name: gitignore-exceptions
-#+begin_src text :tangle .gitignore
+#+begin_src text
 README.org
 .github
 .gitignore
