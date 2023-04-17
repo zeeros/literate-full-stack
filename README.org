@@ -889,6 +889,8 @@ Forcefuly push the branch to ~origin~.
     git checkout -B tangled origin/tangled
     git stash apply
     git stash pop
+    git status
+    git add .
     git commit -m "Tangled code"
     git push -f origin tangled
 #+end_src
