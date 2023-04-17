@@ -875,14 +875,6 @@ Tangles the code.
   run: emacs --batch --eval "(progn (find-file \"README.org\") (org-babel-tangle))"
 #+end_src
 
-Tangles the code.
-
-#+name: step-tangle
-#+begin_src yaml
-- name: Tangle README.org
-  run: emacs --batch --eval "(progn (find-file \"README.org\") (org-babel-tangle))"
-#+end_src
-
 Overrides =.gitignore= with =.gitignore-tangled=.
 
 #+name: step-gitignore-override
