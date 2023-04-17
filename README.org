@@ -893,10 +893,10 @@ Forcefuly push the branch to ~origin~.
   run: | 
     git config --global user.name github-actions
     git config --global user.email github-actions@github.com
-    git checkout -b tangled
+    git checkout -B tangled origin/tangled
     git add .
     git commit -m "Tangled code"
-    git push --force --set-upstream origin tangled
+    git push -f origin tangled
 #+end_src
 
 *** Railway
