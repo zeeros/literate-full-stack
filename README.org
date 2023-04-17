@@ -844,6 +844,7 @@ jobs:
       <<step-install-emacs>>
       <<step-checkout-main>>
       <<step-tangle>>
+      <<step-gitignore-override>>
       <<step-push-tangled>>
 #+end_src
 
