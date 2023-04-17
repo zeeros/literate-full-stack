@@ -888,7 +888,7 @@ Forcefuly push the branch to ~origin~.
     git checkout -B origin/tangled
     git add .
     git commit -m "Tangled code"
-    git push --force tangled
+    git push --force
 #+end_src
 
 *** Railway
