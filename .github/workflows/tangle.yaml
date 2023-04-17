@@ -16,15 +16,11 @@ jobs:
         uses: actions/checkout@v3
       - name: Tangle README.org
         run: emacs --batch --eval "(progn (find-file \"README.org\") (org-babel-tangle))"
-      - name: Switch gitignore
-        run: |
-          mv -f .gitignore-tangled .gitignore
       - name: Add, commit and push to tangled
-        run: | 
+        run: |
           git config --global user.name github-actions
           git config --global user.email github-actions@github.com
-          git fetch origin
-          git checkout -B tangled origin/tangled
-          git add .
+          git checkout -b tangled
+          git add -f .
           git commit -m "Tangled code"
-          git push -f origin tangled
+          git push --force --set-upstream origin tangled
