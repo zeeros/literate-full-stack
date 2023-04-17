@@ -874,6 +874,21 @@ Tangles the code.
   run: emacs --batch --eval "(progn (find-file \"README.org\") (org-babel-tangle))"
 #+end_src
 
+Override =.gitignore= with =.gitignore-tangled=.
+
+#+name: step-gitignore-override
+#+begin_src yaml
+- name: Switch gitignore
+  run: |
+    mv -f .gitignore-tangled .gitignore
+#+end_src
+
+#+name: step-tangle
+#+begin_src yaml
+- name: Tangle README.org
+  run: emacs --batch --eval "(progn (find-file \"README.org\") (org-babel-tangle))"
+#+end_src
+
 Create a ~tangled~ branch. Add and commit the tangled files.
 Forcefuly push the branch to ~origin~.
 
@@ -903,12 +918,21 @@ Railway doesn't support docker compose at the moment.
 
 Track only the following files.
 
+#+name: gitignore-exceptions
+#+begin_src text
+README.org
+.github
+.gitignore
+LICENSE
+#+end_src
+
 #+begin_src text :tangle .gitignore
 /*
-!README.org
-!.github
-!.gitignore
-!LICENSE
+!<<gitignore-exceptions>>
+#+end_src
+
+#+begin_src text :tangle .gitignore-tangled
+<<gitignore-exceptions>>
 #+end_src
 
 License.
