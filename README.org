@@ -881,12 +881,14 @@ Forcefuly push the branch to ~origin~.
 #+begin_src yaml
 - name: Add, commit and push to tangled
   run: |
+    mv -f .gitignore-tangled .gitignore
     git config --global user.name github-actions
     git config --global user.email github-actions@github.com
-    git checkout -b tangled
-    git add -f .
+    git fetch origin
+    git checkout -B origin/tangled
+    git add .
     git commit -m "Tangled code"
-    git push --force --set-upstream origin tangled
+    git push --force tangled
 #+end_src
 
 *** Railway
@@ -903,12 +905,22 @@ Railway doesn't support docker compose at the moment.
 
 Track only the following files.
 
+#+name: gitignore-exceptions
+#+begin_src text :tangle .gitignore
+README.org
+.github
+.gitignore
+LICENSE
+#+end_src
+
 #+begin_src text :tangle .gitignore
 /*
-!README.org
-!.github
-!.gitignore
-!LICENSE
+!<<gitignore-exceptions>>
+#+end_src
+
+#+begin_src text :tangle .gitignore-tangled
+<<gitignore-exceptions>>
+/data
 #+end_src
 
 License.
