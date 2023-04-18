@@ -491,9 +491,11 @@ app.use(express.static(path.join(__dirname, "public")));
 //  adding routes
 require("./routes")(app);
 
+const port = process.env.PORT || 3000;
+
 app.on("ready", () => {
-  app.listen(3000, () => {
-    console.log("Server is up on port", 3000);
+  app.listen(port, () => {
+    console.log("Server is up on port", port);
   });
 });
 
@@ -743,7 +745,7 @@ npm-debug.log
 * Deployment
 ** Local
 
-The [[Web application][web application]] can be run locally as a multi-container app using the [[https://docs.docker.com/compose/][Docker Compose]] tool.
+The [[Web application][web application]] can be run locally as a multi-container app using the Docker Compose tool.
 Use BuildKit to optimize the Docker builds.[fn:3]
 
 #+begin_src sh
