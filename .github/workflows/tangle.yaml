@@ -17,7 +17,6 @@ jobs:
       - name: Tangle README.org
         run: |
           emacs --batch --eval "(progn (find-file \"README.org\") (org-babel-tangle))"
-          cp Dockerfile ./backend
       - name: Add, commit and push to tangled
         run: |
           git config --global user.name github-actions
