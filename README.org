@@ -30,7 +30,7 @@ This is a replica of the [[https://github.com/docker/awesome-compose/tree/e6b1d2
   "devDependencies": {
     "react-scripts": "^5.0.1"
   },
-  "proxy": "https://literate-backend.up.railway.app/"
+  "proxy": "https://localhost:3000"
 }
 #+end_src
 
