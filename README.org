@@ -699,50 +699,6 @@ const serverResponse = {
 module.exports = serverResponse;
 #+end_src
 
-** Containerization
-:properties:
-:header-args+: :tangle Dockerfile
-:end:
-
-Use the official Node.js Alpine image for the ~base~ stage.
-Move all the project metadata into the working directory.
-Expose the default port for Node.js.
-
-#+begin_src conf
-FROM node:18-alpine as base
-WORKDIR /usr/src/app
-COPY package*.json .
-EXPOSE 3000
-CMD ["npm", "start"]
-#+end_src
-
-Build the ~production~ stage on top of the ~base~ stage.
-Set ~NODE_ENV=production~ for better performance, do a clean install of the dependencies and bypass user-oriented features with the command ~npm ci~.[fn:1]
-
-#+begin_src conf
-FROM base as production
-ENV NODE_ENV=production
-RUN npm ci
-COPY . .
-#+end_src
-
-Build the ~development~ stage on top of the ~base~ image.
-Set ~NODE_ENV=development~[fn:1] and install the ~nodemon~ command in the system path.[fn:2]
-
-#+begin_src conf
-FROM base as development
-ENV NODE_ENV=development
-RUN npm install -g nodemon@^2.0.20 && npm install
-COPY . .
-#+end_src
-
-Ignore the following files.
-
-#+begin_src text :tangle backend/.dockerignore
-node_modules
-npm-debug.log
-#+end_src
-
 * Deployment
 ** Local
 
@@ -822,6 +778,50 @@ services:
 networks:
   frontend-backend:
   backend-database:
+#+end_src
+
+*** Dockerfile
+:properties:
+:header-args+: :tangle Dockerfile
+:end:
+
+Use the official Node.js Alpine image for the ~base~ stage.
+Move all the project metadata into the working directory.
+Expose the default port for Node.js.
+
+#+begin_src conf
+FROM node:18-alpine as base
+WORKDIR /usr/src/app
+COPY package*.json .
+EXPOSE 3000
+CMD ["npm", "start"]
+#+end_src
+
+Build the ~production~ stage on top of the ~base~ stage.
+Set ~NODE_ENV=production~ for better performance, do a clean install of the dependencies and bypass user-oriented features with the command ~npm ci~.[fn:1]
+
+#+begin_src conf
+FROM base as production
+ENV NODE_ENV=production
+RUN npm ci
+COPY . .
+#+end_src
+
+Build the ~development~ stage on top of the ~base~ image.
+Set ~NODE_ENV=development~[fn:1] and install the ~nodemon~ command in the system path.[fn:2]
+
+#+begin_src conf
+FROM base as development
+ENV NODE_ENV=development
+RUN npm install -g nodemon@^2.0.20 && npm install
+COPY . .
+#+end_src
+
+Ignore the following files.
+
+#+begin_src text :tangle backend/.dockerignore
+node_modules
+npm-debug.log
 #+end_src
 
 ** Cloud
