@@ -703,7 +703,7 @@ module.exports = serverResponse;
 ** Local
 
 The [[Web application][web application]] can be run locally as a multi-container app using the Docker Compose tool.
-Use BuildKit to optimize the Docker builds.[fn:3]
+Use BuildKit to optimize the Docker builds.[fn:1]
 
 #+begin_src sh
 COMPOSE_DOCKER_CLI_BUILD=1 \
@@ -721,7 +721,7 @@ docker compose up
 *** Configuration
 
 Both the ~frontend~ and ~backend~ services use different build contexts for the same =Dockerfile=.
-The ~backend~ service bypasses ~npm~ and starts directly the server.[fn:4]
+The ~backend~ service bypasses ~npm~ and starts directly the server.[fn:2]
 
 #+begin_src text :tangle compose.yaml
 version: "3.8"
@@ -798,7 +798,7 @@ CMD ["npm", "start"]
 #+end_src
 
 Build the ~production~ stage on top of the ~base~ stage.
-Set ~NODE_ENV=production~ for better performance, do a clean install of the dependencies and bypass user-oriented features with the command ~npm ci~.[fn:1]
+Set ~NODE_ENV=production~ for better performance, do a clean install of the dependencies and bypass user-oriented features with the command ~npm ci~.[fn:3]
 
 #+begin_src conf
 FROM base as production
@@ -808,7 +808,7 @@ COPY . .
 #+end_src
 
 Build the ~development~ stage on top of the ~base~ image.
-Set ~NODE_ENV=development~[fn:1] and install the ~nodemon~ command in the system path.[fn:2]
+Set ~NODE_ENV=development~[fn:3] and install the ~nodemon~ command in the system path.[fn:4]
 
 #+begin_src conf
 FROM base as development
@@ -895,11 +895,22 @@ Forcefuly push the branch to ~origin~.
 
 *** Railway
 
-From the [[https://docs.railway.app/deploy/dockerfiles#docker-compose][Railway documentation]]
+Railway doesn't support docker compose at the moment. [fn:5]
 
-#+begin_quote
-Railway doesn't support docker compose at the moment.
-#+end_quote
+#+name: railway-configuration
+#+begin_src conf :tangle backend/railway.toml
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 10
+#+end_src
+
+#+begin_src conf :tangle frontend/railway.toml
+<<railway-configuration>>
+startCommand = "serve -s build"
+#+end_src
 
 * Misc
 
@@ -941,10 +952,12 @@ SOFTWARE.
 
 * Footnotes
 
-[fn:1] [[https://blog.logrocket.com/node-js-docker-improve-dx-docker-compose#setting-up-production-stage][Setting up the production stage]]
+[fn:1] [[https://blog.logrocket.com/node-js-docker-improve-dx-docker-compose#test-app-docker-docker-compose][Test the app with Docker and Docker Compose]]
 
-[fn:2] [[https://rapidevelop.org/javascript/using-nodemon-with-nodejs-apps#Install_Nodemon][Install Nodemon]]
+[fn:2] [[https://github.com/nodejs/docker-node/blob/main/docs/BestPractices.md#cmd][Docker and Node.js Best Practices - CMD]]
 
-[fn:3] [[https://blog.logrocket.com/node-js-docker-improve-dx-docker-compose#test-app-docker-docker-compose][Test the app with Docker and Docker Compose]]
+[fn:3] [[https://blog.logrocket.com/node-js-docker-improve-dx-docker-compose#setting-up-production-stage][Setting up the production stage]]
 
-[fn:4] [[https://github.com/nodejs/docker-node/blob/main/docs/BestPractices.md#cmd][Docker and Node.js Best Practices - CMD]]
+[fn:4] [[https://rapidevelop.org/javascript/using-nodemon-with-nodejs-apps#Install_Nodemon][Install Nodemon]]
+
+[fn:5] [[https://docs.railway.app/deploy/dockerfiles#docker-compose][Railway Documentation - Docker Compose]]
