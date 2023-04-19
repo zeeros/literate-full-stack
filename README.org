@@ -873,7 +873,9 @@ Tangles the code.
 #+name: step-tangle
 #+begin_src yaml
 - name: Tangle README.org
-  run: emacs --batch --eval "(progn (find-file \"README.org\") (org-babel-tangle))"
+  run: |
+    emacs --batch --eval "(progn (find-file \"README.org\") (org-babel-tangle))"
+    cp Dockerfile ./frontend
 #+end_src
 
 Creates a ~tangled~ branch.
