@@ -25,7 +25,8 @@ This is a replica of the [[https://github.com/docker/awesome-compose/tree/e6b1d2
     "axios": "^1.3.4",
     "sass": "^1.54.0",
     "bootstrap": "^5.2.3",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "serve": "^14.2.0"
   },
   "devDependencies": {
     "react-scripts": "^5.0.1"
