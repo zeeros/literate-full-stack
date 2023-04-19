@@ -15,8 +15,7 @@ jobs:
       - name: Check out main
         uses: actions/checkout@v3
       - name: Tangle README.org
-        run: |
-          emacs --batch --eval "(progn (find-file \"README.org\") (org-babel-tangle))"
+        run: emacs --batch --eval "(progn (find-file \"README.org\") (org-babel-tangle))"
       - name: Add, commit and push to tangled
         run: |
           git config --global user.name github-actions
