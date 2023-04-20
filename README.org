@@ -898,13 +898,16 @@ Forcefuly push the branch to ~origin~.
 *** Railway
 
 [[https://railway.app/][Railway]] is a Platform as a service (PaaS) that offers a decent [[https://railway.app/pricing][free tier]].
-However, at the moment Railway doesn't support Docker compose [fn:5] and private networks [fn:6].
+The [[Web application][web application]] can be deployed on Railway as an [[https://docs.railway.app/deploy/monorepo#isolated-monorepo][isolated monorepo]].
+Few notes about Railway:
+- Builds via ~Dockerfile~ are supported, but Docker compose isn't.[fn:5]
+- Railway supports [[https://nixpacks.com/docs/getting-started][Nixpacks]] builds, so there is no need for the ~Dockerfile~.
+- Private networks are not supported[fn:6], so the backend service needs be exposed to the public with a domain.
+  The frontend service expects the backend's URL to be stored in ~REACT_APP_BACKEND_URL~, an environment variable that should be defined throught the Railway dashboard.
+- While [[https://docs.railway.app/reference/templates][Railway Templates]] can deploy multiple services[fn:7], they lack the level of configuration required by this web application.
+  Few manual steps are required to set up the web application on Railway, check the [[https://docs.railway.app/][documentation]] for more details.
 
-With no private network, the only option is to expose ~backend~ service to the public with a dinamically generated hostname.
-To access the APIs, the ~frontend~ service reads the environment variable ~REACT_APP_BACKEND_URL~.
-The variable has to be defined through the Railway Dashboard and valued with the ~backend~ service hostname.
-
-* Configuration
+The deployment configuration for the backend service is defined below.
 
 #+name: railway-configuration
 #+begin_src conf :tangle backend/railway.toml
@@ -915,6 +918,8 @@ builder = "NIXPACKS"
 restartPolicyType = "ON_FAILURE"
 restartPolicyMaxRetries = 10
 #+end_src
+
+Additionally, the frontend service configuration uses ~serve~ to start a deployment.
 
 #+begin_src conf :tangle frontend/railway.toml
 <<railway-configuration>>
@@ -972,3 +977,5 @@ SOFTWARE.
 [fn:5] [[https://docs.railway.app/deploy/dockerfiles#docker-compose][Railway Documentation - Docker Compose]]
 
 [fn:6] [[https://docs.railway.app/deploy/networking][Railway Documentation - Networking]]
+
+[fn:7] [[https://blog.railway.app/p/multi-service-templates][Railway - Multi-service templates]]
