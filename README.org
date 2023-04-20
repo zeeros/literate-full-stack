@@ -897,8 +897,6 @@ Forcefuly push the branch to ~origin~.
 
 *** Railway
 
-[[https://railway.app/template/tPWeOh?referralCode=zS3_Sh][file:https://railway.app/button.svg]]
-
 [[https://railway.app/][Railway]] is a Platform as a service (PaaS) that offers a decent [[https://railway.app/pricing][free tier]].
 However, at the moment Railway doesn't support Docker compose [fn:5] and private networks [fn:6].
 
