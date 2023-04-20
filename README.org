@@ -9,6 +9,8 @@ This is a replica of the [[https://github.com/docker/awesome-compose/tree/e6b1d2
 
 ** Frontend
 
+- [ ] Why serve? https://create-react-app.dev/docs/deployment/ 
+
 #+begin_src js :tangle frontend/package.json
 {
   "name": "react_frontend",
@@ -718,10 +720,10 @@ Create and start the containers.
 docker compose up
 #+end_src
 
-*** Configuration
+*** Docker Compose
 
 Both the ~frontend~ and ~backend~ services use different build contexts for the same =Dockerfile=.
-The ~backend~ service bypasses ~npm~ and starts directly the server.[fn:2]
+The ~backend~ service bypasses ~npm~ and starts directly the server. [fn:2]
 
 #+begin_src text :tangle compose.yaml
 version: "3.8"
@@ -895,7 +897,14 @@ Forcefuly push the branch to ~origin~.
 
 *** Railway
 
-Railway doesn't support docker compose at the moment. [fn:5]
+[[https://railway.app/][Railway]] is a Platform as a service (PaaS) that offers a decent [[https://railway.app/pricing][free tier]].
+However, at the moment Railway doesn't support Docker compose [fn:5] and private networks [fn:6].
+
+With no private network, the only option is to expose ~backend~ service to the public with a dinamically generated hostname.
+To access the APIs, the ~frontend~ service reads the environment variable ~REACT_APP_BACKEND_URL~.
+The variable has to be defined through the Railway Dashboard and valued with the ~backend~ service hostname.
+
+* Configuration
 
 #+name: railway-configuration
 #+begin_src conf :tangle backend/railway.toml
@@ -961,3 +970,5 @@ SOFTWARE.
 [fn:4] [[https://rapidevelop.org/javascript/using-nodemon-with-nodejs-apps#Install_Nodemon][Install Nodemon]]
 
 [fn:5] [[https://docs.railway.app/deploy/dockerfiles#docker-compose][Railway Documentation - Docker Compose]]
+
+[fn:6] [[https://docs.railway.app/deploy/networking][Railway Documentation - Networking]]
